@@ -1,10 +1,8 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="">
-        TODO List
+    <main className="flex flex-col p-8">
+      <div className="flex justify-center items-center shadow-lg p-4 bg-slate-400 rounded-md w-[200px] h-[200px] text-2xl font-bold cursor-pointer text-white">
+        +
       </div>
     </main>
   );
