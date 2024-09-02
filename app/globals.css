@@ -30,4 +30,8 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  #title-btns :is(.h-12) {
+    height: 50px !important;
+   }
 }
