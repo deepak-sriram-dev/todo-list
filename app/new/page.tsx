@@ -9,7 +9,7 @@ import { useTodoContext } from "@/app/layout";
 export default function New(): JSX.Element {
   const [tempValue, setTempValue] = useState<string>("");
   const [showIcon, setShowIcon] = useState<boolean>(false);
-  let { todoName, setTodoName } = useTodoContext();
+  const { todoName, setTodoName } = useTodoContext();
 
   useEffect(() => {
     if (tempValue !== todoName) {
@@ -21,6 +21,7 @@ export default function New(): JSX.Element {
 
   const handleSave = (): void => {
     setTodoName(tempValue);
+    setShowIcon(false);
   };
 
   const handleSaveByEnter = (pressedKey: string): void => {
@@ -41,10 +42,10 @@ export default function New(): JSX.Element {
           <div className="flex">
             <TextField
               className="w-[300px]"
-              id="filled-basic"
+              id="outlined-basic"
               label="Name"
               autoComplete="off"
-              variant="filled"
+              variant="outlined"
               value={tempValue}
               onKeyDown={(e: KeyboardEvent): void => handleSaveByEnter(e.key)}
               onChange={(e) => setTempValue(e.target.value)}
@@ -54,12 +55,12 @@ export default function New(): JSX.Element {
                 <DoneIcon
                   onClick={handleSave}
                   className="!h-12 !w-12 p-3 cursor-pointer hover:bg-slate-300 hover:rounded-3xl"
-                  id='title-btns'
+                  id="title-btns"
                 />
                 <CloseIcon
                   onClick={handleClose}
                   className="h-[50px] w-[50px] p-3 cursor-pointer hover:bg-slate-300 hover:rounded-3xl"
-                  id='title-btns'
+                  id="title-btns"
                 />
               </div>
             )}

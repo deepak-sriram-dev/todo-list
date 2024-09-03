@@ -1,16 +1,12 @@
-"use client";
-import { useEffect, useState } from "react";
+// "use client";
 import { usePathname } from "next/navigation";
 import { useTodoContext } from "@/app/layout";
 import Link from "next/link";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export default function NavBar(): JSX.Element {
   const { todoName, setTodoName } = useTodoContext();
   const pathName = usePathname();
   // const [routeName, setRouteName] = useState<string>("");
-  console.log("🚀 ~ NavBar ~ pathName:", pathName);
-
   // useEffect(() => {
   //   const route = pathName.split("/");
   //   if (route.length > 1) {
