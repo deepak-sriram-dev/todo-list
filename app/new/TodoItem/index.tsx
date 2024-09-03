@@ -29,9 +29,8 @@ export default function TodoItem(): JSX.Element {
       <FormGroup>
         {todoItems.map(
           (item: string): JSX.Element => (
-            <div className="flex items-center mb-2 p-2">
+            <div key={uuidv4()} className="flex items-center mb-2 p-2">
               <FormControlLabel
-                key={uuidv4()}
                 control={<Checkbox />}
                 label={
                   <TextField
