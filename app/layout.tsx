@@ -2,25 +2,16 @@
 // import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { useContext, createContext, useState } from "react";
+import { useState } from "react";
 import NavBar from "@/app/Navbar";
-import { TodoContextInterface } from "./interface";
+import { TodoContext } from "./contextProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const TodoContext = createContext<TodoContextInterface>({
-  todoName: "",
-  setTodoName: () => {},
-});
-
-// export const metadata: Metadata = {
+// const metadata: Metadata = {
 //   title: "TODO",
 //   description: "Make It Happen: Your ToDo List Success Companion",
 // };
-
-export function useTodoContext(): TodoContextInterface {
-  return useContext(TodoContext);
-}
 
 export default function RootLayout({
   children,

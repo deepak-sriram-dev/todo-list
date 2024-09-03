@@ -4,7 +4,7 @@ import TextField from "@mui/material/TextField";
 import DoneIcon from "@mui/icons-material/Done";
 import TodoItem from "@/app/new/TodoItem";
 import CloseIcon from "@mui/icons-material/Close";
-import { useTodoContext } from "@/app/layout";
+import { useTodoContext } from "@/app/todoContext";
 
 export default function New(): JSX.Element {
   const [tempValue, setTempValue] = useState<string>("");

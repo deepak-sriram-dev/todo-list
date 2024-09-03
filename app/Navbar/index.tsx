@@ -1,6 +1,6 @@
 // "use client";
 import { usePathname } from "next/navigation";
-import { useTodoContext } from "@/app/layout";
+import { useTodoContext } from "@/app/todoContext";
 import Link from "next/link";
 
 export default function NavBar(): JSX.Element {
