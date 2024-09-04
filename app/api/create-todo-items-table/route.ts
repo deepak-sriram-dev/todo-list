@@ -9,6 +9,7 @@ export async function GET(request: Request) {
             todo_item varchar(255),
             is_checked boolean,
             is_deleted boolean,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY(ID),
             CONSTRAINT fk_todos
             FOREIGN KEY (todo_id)
