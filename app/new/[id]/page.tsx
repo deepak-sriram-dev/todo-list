@@ -12,7 +12,7 @@ interface PropsInterface {
   };
 }
 
-export async function getTodo(id: number): Promise<Response> {
+async function getTodo(id: number): Promise<Response> {
   return await fetch(`/api/todo/${id}`, {
     method: "GET",
   });
