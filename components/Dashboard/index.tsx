@@ -1,8 +1,11 @@
 "use client";
+import { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import { Button } from "@mui/material";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import CircularProgress from "@mui/material/CircularProgress";
+import { v4 as uuidv4 } from "uuid";
 
 interface DashboardInterface {
   id: number;
@@ -18,20 +21,20 @@ export async function getList(): Promise<Response> {
 export default function Dashboard(): JSX.Element {
   const router = useRouter();
   const [todoList, setTodoList] = useState<DashboardInterface[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
+    setLoading(true);
     getList()
       .then((res) => res.json())
       .then((data) => {
         setTodoList(data.rows);
+        setLoading(false);
       })
       .catch((error) => {
-        console.log("🚀 ~ getList ~ error:", error);
+        setLoading(false);
       });
   }, []);
-
-  console.log("🚀 ~ Dashboard ~ todoList:", todoList);
-
   const handleCreate = async (): Promise<void> => {
     return await fetch("/api/todo", {
       method: "POST",
@@ -39,29 +42,36 @@ export default function Dashboard(): JSX.Element {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("🚀 ~ Home ~ data:", data);
-        router.push("/new");
+        router.push(`/new/${data.id}`);
       })
       .catch((error) => {
-        console.log("🚀 ~ Home ~ error:", error);
         router.push("/");
       });
   };
+
   return (
-    <div className="flex flex-wrap">
-      <div className="p-5">
-        <Button
-          onClick={handleCreate}
-          className="flex justify-center items-center shadow-lg p-4 bg-slate-400 rounded-md w-[200px] h-[200px] text-2xl font-bold text-white"
-        >
-          <AddIcon />
-        </Button>
-      </div>
-      {todoList.length > 0 &&
+    <div className="flex flex-wrap h-full w-full">
+      {loading && (
+        <div className="flex justify-center items-center h-full w-full">
+          <CircularProgress />{" "}
+        </div>
+      )}
+      {!loading && (
+        <div className="p-5">
+          <Button
+            onClick={handleCreate}
+            className="flex justify-center items-center shadow-lg p-4 bg-slate-400 rounded-md w-[200px] h-[200px] text-2xl font-bold text-white"
+          >
+            <AddIcon />
+          </Button>
+        </div>
+      )}
+      {!loading &&
+        todoList.length > 0 &&
         todoList.map((eachTodo) => (
-          <div className="p-5">
+          <div className="p-5" key={uuidv4()}>
             <Button className="flex justify-center items-center shadow-lg p-4 bg-slate-400 rounded-md w-[200px] h-[200px] text-2xl font-bold text-white">
-              {eachTodo.title}
+              <Link href={`/new/${eachTodo.id}`}>{eachTodo.title} </Link>
             </Button>
           </div>
         ))}

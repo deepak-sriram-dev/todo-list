@@ -8,18 +8,15 @@ export async function POST(req: Request) {
     const { rows } =
       await sql`INSERT INTO todos (title) VALUES (${title})RETURNING *;`;
 
-    console.log("🚀 ~ POST ~ result:", rows);
     if (rows.length !== 0) {
-      // return NextResponse.redirect(new URL("/new", req.url));
       return NextResponse.json(
-        { message: "success", success: true },
+        { message: "success", success: true, id: rows[0].id },
         { status: 200 }
       );
     } else {
       throw new Error("Something went wrong");
     }
   } catch (error) {
-    console.log("🚀 ~ POST ~ error:", error);
     return NextResponse.json(
       { message: error, success: false },
       { status: 500 }

@@ -1,18 +1,22 @@
-// "use client";
-import { usePathname } from "next/navigation";
 import { useTodoContext } from "@/app/todoContext";
 import Link from "next/link";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function NavBar(): JSX.Element {
+  const [loading, setLoading] = useState<boolean>(false);
   const { todoName, setTodoName } = useTodoContext();
-  const pathName = usePathname();
-  // const [routeName, setRouteName] = useState<string>("");
-  // useEffect(() => {
-  //   const route = pathName.split("/");
-  //   if (route.length > 1) {
-  //     setRouteName(route[1]);
-  //   }
-  // }, []);
+  const path = usePathname();
+  const isNewPage = path.includes("/new");
+
+  useEffect(() => {
+    if (todoName.length === 0 && isNewPage) {
+      setLoading(true);
+    } else {
+      setLoading(false)
+    }
+  }, [todoName]);
 
   return (
     <div className="flex items-center p-3 text-left text-white bg-slate-500 shadow-[0_2px_10px_3px_#a748ea] h-[80px]">
@@ -23,8 +27,10 @@ export default function NavBar(): JSX.Element {
       >
         TODO
       </Link>
-      {`-> ${todoName}`}
-      {/* {routeName.length > 0 && `-> ${todoContext.todoName}`} */}
+      {loading && (
+        <CircularProgress size={25} color="inherit" className="ml-2" />
+      )}
+      {todoName && isNewPage && `-> ${todoName}`}
     </div>
   );
 }
