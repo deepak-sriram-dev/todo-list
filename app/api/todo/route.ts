@@ -1,3 +1,4 @@
+import { RaiseError } from "@/lib/error";
 import { sql } from "@vercel/postgres";
 import { NextResponse } from "next/server";
 
@@ -17,10 +18,7 @@ export async function POST(req: Request) {
       throw new Error("Something went wrong");
     }
   } catch (error) {
-    return NextResponse.json(
-      { message: error, success: false },
-      { status: 500 }
-    );
+    RaiseError(error);
   }
 }
 
@@ -29,6 +27,6 @@ export async function GET(req: Request) {
     const { rows } = await sql`SELECT * FROM todos`;
     return NextResponse.json({ rows }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error }, { status: 500 });
+    RaiseError(error);
   }
 }

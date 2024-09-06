@@ -1,8 +1,8 @@
 import { useTodoContext } from "@/app/todoContext";
 import Link from "next/link";
-import CircularProgress from "@mui/material/CircularProgress";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import Loading from "../Loading";
 
 export default function NavBar(): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false);
@@ -14,7 +14,7 @@ export default function NavBar(): JSX.Element {
     if (todoName.length === 0 && isNewPage) {
       setLoading(true);
     } else {
-      setLoading(false)
+      setLoading(false);
     }
   }, [todoName]);
 
@@ -28,7 +28,9 @@ export default function NavBar(): JSX.Element {
         TODO
       </Link>
       {loading && (
-        <CircularProgress size={25} color="inherit" className="ml-2" />
+        <Loading
+          loadingProps={{ size: 25, color: "inherit", className: "ml-2" }}
+        />
       )}
       {todoName && isNewPage && `-> ${todoName}`}
     </div>

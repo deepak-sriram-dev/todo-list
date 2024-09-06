@@ -86,7 +86,7 @@ export default function New({ params }: PropsInterface): JSX.Element {
               </div>
             )}
           </div>
-          <TodoItem />
+          <TodoItem todoId={parseInt(params.id)} />
         </div>
       </div>
     </div>
