@@ -14,7 +14,7 @@ export default function NavBar(): JSX.Element {
     if (todoName.length === 0 && isNewPage) {
       setLoading(true);
     } else {
-      setLoading(false)
+      setLoading(false);
     }
   }, [todoName]);
 
