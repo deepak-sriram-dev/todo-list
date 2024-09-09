@@ -2,14 +2,35 @@
 import { KeyboardEvent, useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import DoneIcon from "@mui/icons-material/Done";
-import TodoItem from "@/app/new/TodoItem";
+import TodoItem from "@/components/TodoItem";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTodoContext } from "@/app/todoContext";
 
-export default function New(): JSX.Element {
+interface PropsInterface {
+  params: {
+    id: string;
+  };
+}
+
+async function getTodo(id: number): Promise<Response> {
+  return await fetch(`/api/todo/${id}`, {
+    method: "GET",
+  });
+}
+
+export default function New({ params }: PropsInterface): JSX.Element {
   const [tempValue, setTempValue] = useState<string>("");
   const [showIcon, setShowIcon] = useState<boolean>(false);
   const { todoName, setTodoName } = useTodoContext();
+
+  useEffect(() => {
+    getTodo(parseInt(params.id))
+      .then((res) => res.json())
+      .then((data) => {
+        setTodoName(data.data.title);
+        setTempValue(data.data.title);
+      });
+  }, []);
 
   useEffect(() => {
     if (tempValue !== todoName) {
@@ -42,7 +63,7 @@ export default function New(): JSX.Element {
           <div className="flex">
             <TextField
               className="w-[300px]"
-              id="outlined-basic"
+              id="outlined-basic todo-item-text-field-id"
               label="Name"
               autoComplete="off"
               variant="outlined"
