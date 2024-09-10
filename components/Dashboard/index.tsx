@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import Loading from "@/components/Loading";
+import { RaiseError } from "@/lib/error";
 
 interface DashboardInterface {
   id: number;
@@ -42,6 +43,7 @@ export default function Dashboard(): JSX.Element {
         setLoading(false);
       });
   }, []);
+
   const handleCreate = async (): Promise<void> => {
     setNewBtnClicked(true);
     return await fetch("/api/todo", {
@@ -63,7 +65,11 @@ export default function Dashboard(): JSX.Element {
     <div className="flex flex-wrap h-full w-full">
       <div className="p-5" onClick={handleCreate}>
         <Button className="flex justify-center items-center shadow-lg p-4 bg-slate-400 rounded-md w-[200px] h-[200px] text-2xl font-bold text-white">
-          {newBtnClicked ? <Loading /> : <AddIcon />}
+          {newBtnClicked ? (
+            <Loading loadingProps={{ color: "inherit", size: 20 }} />
+          ) : (
+            <AddIcon />
+          )}
         </Button>
       </div>
       {!loading &&

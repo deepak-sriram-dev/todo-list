@@ -69,6 +69,7 @@ export default function TodoItem({
             control={<Checkbox />}
             label={
               <TextField
+                disabled={loading}
                 className="w-[400px]"
                 id="outlined-basic"
                 variant="outlined"

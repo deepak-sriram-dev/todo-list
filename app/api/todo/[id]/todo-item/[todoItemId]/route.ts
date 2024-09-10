@@ -16,15 +16,17 @@ export async function PUT(
   try {
     const { updateColumn, updateValue } = await req.json();
 
-    const query = `UPDATE todo_items SET ${sql(updateColumn)} = ${sql(
-      updateValue
-    )} WHERE todo_id = ${id} AND id = ${todoItemId};`;
+    if (updateColumn === "is_checked") {
+      await sql`UPDATE todo_items SET is_checked=${updateValue} WHERE todo_id = ${id} AND id = ${todoItemId}`;
+    } else if (updateColumn === "todo_item") {
+      await sql`UPDATE todo_items SET todo_item=${updateValue} WHERE todo_id = ${id} AND id = ${todoItemId}`;
+    }
 
-    const result = await sql`${query}`;
-    console.log("🚀 ~ result:", result);
-    return NextResponse.json({ success: true }, { status: 200 });
+    return NextResponse.json(
+      { message: "success", success: true },
+      { status: 200 }
+    );
   } catch (error) {
-    console.log("🚀 ~ error:", error);
     RaiseError(error);
   }
 }

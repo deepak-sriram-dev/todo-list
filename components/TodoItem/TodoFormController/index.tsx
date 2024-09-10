@@ -4,7 +4,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Loading from "@/components/Loading";
 import { Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useState } from "react";
+import { KeyboardEvent, useEffect, useState } from "react";
 import { TodoItemCheckListInterface } from "../interface";
 import { deleteTodoItem, updateTodoItem } from "./api";
 import { getTodoItems } from "../api";
@@ -19,8 +19,16 @@ interface TodoFormControllerInterface {
 
 export default function TodoFormController(props: TodoFormControllerInterface) {
   const { item, todoId, setListItemLoading, setTodoItems, setError } = props;
-  const [deleteItemLoading, setDeleteItemLoading] = useState<boolean>(false);
-  const [deleteItem, setDeleteItem] = useState<number>(0);
+  const [itemLoading, setItemLoading] = useState<boolean>(false);
+  const [itemId, setItemId] = useState<number>(0);
+  const [tempValue, setTempValue] = useState<string>("");
+  const [textFieldEnabled, settextFieldEnabled] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!textFieldEnabled && tempValue.length) {
+      settextFieldEnabled(true);
+    }
+  }, [tempValue.length]);
 
   const list = () => {
     getTodoItems(todoId)
@@ -35,20 +43,52 @@ export default function TodoFormController(props: TodoFormControllerInterface) {
       });
   };
 
-  const handleDelete = ({ id }: TodoItemCheckListInterface): void => {
-    setDeleteItem(id);
-    setDeleteItemLoading(true);
-    deleteTodoItem(todoId, id).then(() => list());
+  const updateQuery = (
+    itemId: number,
+    column: string,
+    value: string | boolean
+  ): void => {
+    updateTodoItem(todoId, itemId, column, value)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          list();
+        }
+        setItemLoading(false);
+      })
+      .catch((error) => {
+        setItemLoading(false);
+        setError(`ERROR: ${JSON.stringify(error)} or Something went wrong`);
+      });
+  };
+
+  const handleDelete = async ({
+    id,
+  }: TodoItemCheckListInterface): Promise<void> => {
+    setItemLoading(true);
+    setItemId(id);
+    await deleteTodoItem(todoId, id).then(() => list());
+    setItemLoading(false);
   };
 
   const handleCheck = (id: number): void => {
-    console.log("🚀 ~ handleCheck ~ id:", id);
+    setItemLoading(true);
+    setItemId(id);
 
-    updateTodoItem(todoId, id, "is_checked", false)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("🚀 ~ updateTodoItem ~ data:", data);
-      });
+    updateQuery(id, "is_checked", !item.is_checked);
+  };
+
+  const handleItemChange = (e: any, id: number): void => {
+    setItemId(id);
+    setItemLoading(false);
+    setTempValue(e.target.value);
+  };
+
+  const handleUpdate = (e: KeyboardEvent): void => {
+    if (e.key === "Enter") {
+      setItemLoading(true);
+      updateQuery(itemId, "todo_item", tempValue);
+    }
   };
 
   return (
@@ -58,25 +98,32 @@ export default function TodoFormController(props: TodoFormControllerInterface) {
         control={
           <Checkbox
             checked={item.is_checked}
+            disabled={itemLoading}
             onClick={(): void => handleCheck(item.id)}
           />
         }
         label={
           <TextField
+            disabled={itemLoading}
             className="w-[400px]"
             id="outlined-basic"
             variant="outlined"
             label="list item"
             autoComplete="off"
-            value={item.todo_item}
+            value={textFieldEnabled ? tempValue : item.todo_item}
+            onChange={(e) => handleItemChange(e, item.id)}
+            onKeyDown={handleUpdate}
           />
         }
       />
 
-      {deleteItem === item.id && deleteItemLoading ? (
+      {itemId === item.id && itemLoading ? (
         <Loading className="ml-5" loadingProps={{ size: 15 }} />
       ) : (
-        <Button color="inherit" onClick={(): void => handleDelete(item)}>
+        <Button
+          color="inherit"
+          onClick={(): Promise<void> => handleDelete(item)}
+        >
           <DeleteIcon />
         </Button>
       )}

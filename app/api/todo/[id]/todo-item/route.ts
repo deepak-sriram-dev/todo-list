@@ -14,12 +14,8 @@ export async function POST(
 ) {
   try {
     const { itemName } = await req.json();
-    console.log("🚀 ~ itemName:", itemName);
-
     const { rows } =
       await sql`INSERT INTO todo_items(todo_id, todo_item, is_checked, is_deleted) VALUES(${id}, ${itemName}, ${false}, ${false}) RETURNING *;`;
-
-    console.log("🚀 ~ rows:", rows);
     if (rows.length !== 0) {
       const { id, todoItem, isChecked } = rows[0];
       return NextResponse.json(
@@ -30,7 +26,6 @@ export async function POST(
       throw new Error("something went wrong");
     }
   } catch (error) {
-    console.log("🚀 ~ error:", error);
     RaiseError(error);
   }
 }
@@ -38,7 +33,7 @@ export async function POST(
 export async function GET(req: Request, { params: { id } }: RequestParamsType) {
   try {
     const { rows } =
-      await sql`SELECT * FROM todo_items WHERE todo_id = ${id} AND is_deleted = false`;
+      await sql`SELECT * FROM todo_items WHERE todo_id = ${id} AND is_deleted = false ORDER BY created_at`;
     return NextResponse.json({ rows, success: true }, { status: 200 });
   } catch (error) {
     RaiseError(error);
