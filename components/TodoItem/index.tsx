@@ -1,8 +1,6 @@
 "use client";
 import React, { KeyboardEvent, useEffect, useState } from "react";
 import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import TextField from "@mui/material/TextField";
 import { v4 as uuidv4 } from "uuid";
 import Loading from "../Loading";
@@ -12,6 +10,7 @@ import {
 } from "./interface";
 import { createTodoItemAPI, getTodoItems } from "./api";
 import TodoFormController from "./TodoFormController";
+import { notFound } from "next/navigation";
 
 export default function TodoItem({
   todoId,
@@ -64,22 +63,17 @@ export default function TodoItem({
   return (
     <div className="flex flex-col p-5 mt-10 h-full">
       <FormGroup>
-        <div key={uuidv4()} className="flex items-center mb-2 p-2">
-          <FormControlLabel
-            control={<Checkbox />}
-            label={
-              <TextField
-                disabled={loading}
-                className="w-[400px]"
-                id="outlined-basic"
-                variant="outlined"
-                label="list item"
-                autoComplete="off"
-                onKeyDown={(e: KeyboardEvent) => handleEnter(e)}
-              />
-            }
+        <div key={uuidv4()} className="flex items-center mb-2 p-2 ml-[30px]">
+          <TextField
+            disabled={loading}
+            className="w-[400px]"
+            id="standard-basic"
+            variant="standard"
+            label="list item"
+            autoComplete="off"
+            onKeyDown={(e: KeyboardEvent) => handleEnter(e)}
           />
-          {loading && <Loading loadingProps={{ size: 15 }} />}
+          {loading && <Loading className="ml-5" loadingProps={{ size: 15 }} />}
         </div>
         {listItemLoading ? (
           <Loading
@@ -99,7 +93,7 @@ export default function TodoItem({
           ))
         )}
       </FormGroup>
-      {error && <div>{error}</div>}
+      {error && notFound()}
     </div>
   );
 }

@@ -35,9 +35,7 @@ export async function GET(req: Request, { params }: RequestParamsType) {
 export async function PUT(req: Request, { params: { id } }: RequestParamsType) {
   try {
     const { updateValue } = await req.json();
-    const result =
-      await sql`UPDATE todos SET title=${updateValue} WHERE id=${id}`;
-    console.log("🚀 ~ PUT ~ result:", result);
+    await sql`UPDATE todos SET title=${updateValue} WHERE id=${id}`;
     return NextResponse.json(
       { message: "success", success: true, id: id, title: updateValue },
       { status: 200 }
@@ -52,7 +50,7 @@ export async function DELETE(
   { params: { id } }: RequestParamsType
 ) {
   try {
-    await sql`DELETE FROM todos WHERE id=${id} CASCADE`;
+    await sql`DELETE FROM todos WHERE id=${id}`;
 
     return NextResponse.json(
       { message: "success", success: true },

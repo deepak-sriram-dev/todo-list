@@ -106,8 +106,8 @@ export default function TodoFormController(props: TodoFormControllerInterface) {
           <TextField
             disabled={itemLoading || item.is_checked}
             className="w-[400px]"
-            id="outlined-basic"
-            variant="outlined"
+            id="standard-basic"
+            variant="standard"
             label="list item"
             autoComplete="off"
             value={textFieldEnabled ? tempValue : item.todo_item}

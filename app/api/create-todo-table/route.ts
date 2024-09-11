@@ -15,7 +15,7 @@ export async function GET(request: Request) {
       PRIMARY KEY(ID),
       CONSTRAINT fk_todos
       FOREIGN KEY (todo_id)
-      REFERENCES todos (id)
+      REFERENCES todos (id) ON DELETE CASCADE
     )`;
     return NextResponse.json({ result }, { status: 200 });
   } catch (error) {

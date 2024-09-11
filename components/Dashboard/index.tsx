@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import { Button } from "@mui/material";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import Loading from "@/components/Loading";
 import { createTodo, deleteTodo, getList } from "./api";
@@ -21,9 +21,9 @@ export default function Dashboard(): JSX.Element {
   const router = useRouter();
   const [todoList, setTodoList] = useState<DashboardInterface[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [newBtnClicked, setNewBtnClicked] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const [dropdownClicked, setDropdownClicked] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const openDropdown = Boolean(anchorEl);
   const [selectedTodoId, setSelectedTodoId] = useState<number>(0);
@@ -60,7 +60,6 @@ export default function Dashboard(): JSX.Element {
       })
       .catch((error) => {
         setError(error);
-        router.push("/");
       });
   };
 
@@ -77,11 +76,13 @@ export default function Dashboard(): JSX.Element {
   };
 
   const handleDeleteTodo = (): void => {
+    handleCloseDropdown();
+    setDeleteLoading(true);
     deleteTodo(selectedTodoId)
       .then((res) => res.json())
       .then((data) => {
-        console.log("🚀 ~ .then ~ data:", data);
         list();
+        setDeleteLoading(false);
       });
   };
 
@@ -100,30 +101,39 @@ export default function Dashboard(): JSX.Element {
         todoList.length > 0 &&
         todoList.map((eachTodo) => (
           <div className="p-5">
-            <Button className="flex cursor-default justify-center items-center shadow-lg p-4 bg-slate-400 rounded-md w-[200px] h-[200px] text-2xl font-bold text-white relative">
-              <Link
-                key={uuidv4()}
-                href={`/new/${eachTodo.id}`}
-                className="cursor-pointer"
-              >
-                {eachTodo.title}
-              </Link>
-              <IconButton
-                aria-label="more"
-                id="long-button"
-                onClick={(e) => handleDropdown(e, eachTodo.id)}
-                className="absolute top-2 right-2"
-                color="inherit"
-              >
-                <MoreVertIcon />
-              </IconButton>
+            <Button
+              disabled={selectedTodoId === eachTodo.id && deleteLoading}
+              className="flex cursor-default justify-center items-center shadow-lg p-4 bg-slate-400 rounded-md w-[200px] h-[200px] text-2xl font-bold text-white relative"
+            >
+              {selectedTodoId === eachTodo.id && deleteLoading ? (
+                <Loading loadingProps={{ color: "inherit" }} />
+              ) : (
+                <div>
+                  <Link
+                    key={uuidv4()}
+                    href={`/new/${eachTodo.id}`}
+                    className="cursor-pointer"
+                  >
+                    {eachTodo.title}
+                  </Link>
+                  <IconButton
+                    aria-label="more"
+                    id="long-button"
+                    onClick={(e) => handleDropdown(e, eachTodo.id)}
+                    className="absolute top-2 right-2"
+                    color="inherit"
+                  >
+                    <MoreVertIcon />
+                  </IconButton>{" "}
+                </div>
+              )}
             </Button>
           </div>
         ))}
       {loading && (
         <Loading className="flex justify-center items-center h-full w-full" />
       )}
-      {error.length > 0 && <div>{error}</div>}
+      {error.length > 0 && notFound()}
 
       <Menu
         id="long-menu"
