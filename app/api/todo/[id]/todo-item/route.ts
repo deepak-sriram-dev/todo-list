@@ -34,7 +34,10 @@ export async function GET(req: Request, { params: { id } }: RequestParamsType) {
   try {
     const { rows } =
       await sql`SELECT * FROM todo_items WHERE todo_id = ${id} AND is_deleted = false ORDER BY created_at`;
-    return NextResponse.json({ rows, success: true }, { status: 200 });
+    return NextResponse.json(
+      { rows: rows || [], success: true },
+      { status: 200 }
+    );
   } catch (error) {
     RaiseError(error);
   }

@@ -12,14 +12,14 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
-interface DashboardInterface {
+interface TodoItemsInterface {
   id: number;
   title: String;
 }
 
 export default function Dashboard(): JSX.Element {
   const router = useRouter();
-  const [todoList, setTodoList] = useState<DashboardInterface[]>([]);
+  const [todoList, setTodoList] = useState<TodoItemsInterface[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [newBtnClicked, setNewBtnClicked] = useState<boolean>(false);
@@ -55,8 +55,12 @@ export default function Dashboard(): JSX.Element {
     return createTodo()
       .then((res) => res.json())
       .then((data) => {
-        setNewBtnClicked(false);
-        router.push(`/new/${data.id}`);
+        if (data.success) {
+          setNewBtnClicked(false);
+          router.push(`/new/${data.id}`);
+        } else {
+          setError("Something went wrong");
+        }
       })
       .catch((error) => {
         setError(error);
@@ -88,12 +92,16 @@ export default function Dashboard(): JSX.Element {
 
   return (
     <div className="flex flex-wrap h-full w-full">
-      <div className="p-5" onClick={handleCreate}>
-        <Button className="flex justify-center items-center shadow-lg p-4 bg-slate-400 rounded-md w-[200px] h-[200px] text-2xl font-bold text-white">
+      <div className="p-5" onClick={handleCreate} data-testid="addBtn">
+        <Button
+          id="addBtn"
+          aria-label="Add button"
+          className="flex justify-center items-center shadow-lg p-4 bg-slate-400 rounded-md w-[200px] h-[200px] text-2xl font-bold text-white"
+        >
           {newBtnClicked ? (
             <Loading loadingProps={{ color: "inherit", size: 20 }} />
           ) : (
-            <AddIcon />
+            <AddIcon titleAccess="add-icon-btn" />
           )}
         </Button>
       </div>

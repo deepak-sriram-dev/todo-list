@@ -81,7 +81,7 @@ export default function TodoItem({
             className="flex justify-center"
           />
         ) : (
-          todoItems.map((item) => (
+          Array.isArray(todoItems) && todoItems.map((item) => (
             <TodoFormController
               key={uuidv4()}
               item={item}
