@@ -104,7 +104,7 @@ export default function TodoFormController(props: TodoFormControllerInterface) {
         }
         label={
           <TextField
-            disabled={itemLoading}
+            disabled={itemLoading || item.is_checked}
             className="w-[400px]"
             id="outlined-basic"
             variant="outlined"
