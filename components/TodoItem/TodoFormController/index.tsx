@@ -92,23 +92,28 @@ export default function TodoFormController(props: TodoFormControllerInterface) {
   };
 
   return (
-    <div className="flex items-center mb-2 p-2">
+    <div
+      className="flex items-center mb-2 p-2"
+      data-testid={item ? `todoItem-${item.id}` : "todoItem-divs"}
+    >
       <FormControlLabel
         className="mr-0"
         control={
           <Checkbox
             checked={item.is_checked}
             disabled={itemLoading}
+            id={`todoItem-${item.id}-checkbox`}
             onClick={(): void => handleCheck(item.id)}
           />
         }
         label={
           <TextField
+            aria-label={`createTodoItem-${item.id}`}
             disabled={itemLoading || item.is_checked}
             className="w-[400px]"
-            id="standard-basic"
+            id={`standard-basic todoItem-${item.id}`}
             variant="standard"
-            label="list item"
+            label={`todoItem-${item.id}`}
             autoComplete="off"
             value={textFieldEnabled ? tempValue : item.todo_item}
             onChange={(e) => handleItemChange(e, item.id)}
@@ -121,6 +126,7 @@ export default function TodoFormController(props: TodoFormControllerInterface) {
         <Loading className="ml-5" loadingProps={{ size: 15 }} />
       ) : (
         <Button
+          id="delete-icon"
           color="inherit"
           onClick={(): Promise<void> => handleDelete(item)}
         >

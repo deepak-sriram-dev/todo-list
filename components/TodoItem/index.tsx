@@ -39,6 +39,8 @@ export default function TodoItem({
   }, []);
 
   const handleEnter = (event: KeyboardEvent): void => {
+    console.log("handleEnter function called ...")
+    
     if (event.key === "Enter") {
       setLoading(true);
       const target = event.target as HTMLInputElement;
@@ -63,7 +65,10 @@ export default function TodoItem({
   return (
     <div className="flex flex-col p-5 mt-10 h-full">
       <FormGroup>
-        <div key={uuidv4()} className="flex items-center mb-2 p-2 ml-[30px]">
+        <div
+          key={uuidv4()}
+          className="flex items-center mb-2 p-2 ml-[30px]"
+        >
           <TextField
             disabled={loading}
             className="w-[400px]"
@@ -81,7 +86,8 @@ export default function TodoItem({
             className="flex justify-center"
           />
         ) : (
-          Array.isArray(todoItems) && todoItems.map((item) => (
+          Array.isArray(todoItems) &&
+          todoItems.map((item) => (
             <TodoFormController
               key={uuidv4()}
               item={item}

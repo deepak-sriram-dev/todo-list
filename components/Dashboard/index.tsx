@@ -89,9 +89,8 @@ export default function Dashboard(): JSX.Element {
         setDeleteLoading(false);
       });
   };
-
   return (
-    <div className="flex flex-wrap h-full w-full">
+    <div className="flex flex-wrap h-full w-full" data-testid="dashboard-main">
       <div className="p-5" onClick={handleCreate} data-testid="addBtn">
         <Button
           id="addBtn"
@@ -105,10 +104,9 @@ export default function Dashboard(): JSX.Element {
           )}
         </Button>
       </div>
-      {!loading &&
-        todoList.length > 0 &&
+      {todoList.length > 0 &&
         todoList.map((eachTodo) => (
-          <div className="p-5">
+          <div key={eachTodo.id} className="p-5">
             <Button
               disabled={selectedTodoId === eachTodo.id && deleteLoading}
               className="flex cursor-default justify-center items-center shadow-lg p-4 bg-slate-400 rounded-md w-[200px] h-[200px] text-2xl font-bold text-white relative"
@@ -116,7 +114,7 @@ export default function Dashboard(): JSX.Element {
               {selectedTodoId === eachTodo.id && deleteLoading ? (
                 <Loading loadingProps={{ color: "inherit" }} />
               ) : (
-                <div>
+                <div data-testid="link-card-div">
                   <Link
                     key={uuidv4()}
                     href={`/new/${eachTodo.id}`}
@@ -125,7 +123,7 @@ export default function Dashboard(): JSX.Element {
                     {eachTodo.title}
                   </Link>
                   <IconButton
-                    aria-label="more"
+                    aria-label="dropdown-more"
                     id="long-button"
                     onClick={(e) => handleDropdown(e, eachTodo.id)}
                     className="absolute top-2 right-2"
@@ -144,13 +142,16 @@ export default function Dashboard(): JSX.Element {
       {error.length > 0 && notFound()}
 
       <Menu
+        key={selectedTodoId}
         id="long-menu"
         MenuListProps={{ "aria-labelledby": "long-button" }}
         anchorEl={anchorEl}
         open={openDropdown}
         onClose={handleCloseDropdown}
       >
-        <MenuItem onClick={handleDeleteTodo}>Delete</MenuItem>
+        <MenuItem aria-label="dropdown-menu-item" onClick={handleDeleteTodo}>
+          Delete
+        </MenuItem>
       </Menu>
     </div>
   );
