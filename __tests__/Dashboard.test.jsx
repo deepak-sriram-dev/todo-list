@@ -5,11 +5,10 @@ import {
   queryByAttribute,
   waitFor,
   screen,
-  renderHook,
 } from "@testing-library/react";
 import Dashboard from "../components/Dashboard";
 import { useRouter } from "next/navigation";
-import React, { act, useState } from "react";
+import React, { act } from "react";
 import NotFound from "../app/not-found";
 
 jest.mock("next/navigation", () => ({

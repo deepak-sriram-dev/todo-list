@@ -18,6 +18,7 @@ export default function TodoItem({
   const [todoItems, setTodoItems] = useState<TodoItemCheckListInterface[]>([]);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [textError, setTextError] = useState<boolean>(false);
   const [listItemLoading, setListItemLoading] = useState<boolean>(false);
 
   const list = () => {
@@ -39,36 +40,37 @@ export default function TodoItem({
   }, []);
 
   const handleEnter = (event: KeyboardEvent): void => {
-    console.log("handleEnter function called ...")
-    
     if (event.key === "Enter") {
       setLoading(true);
       const target = event.target as HTMLInputElement;
-      createTodoItemAPI(target.value, todoId)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
+      if (target.value.length === 0) {
+        setTextError(true);
+        setLoading(false);
+      } else {
+        createTodoItemAPI(target.value, todoId)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              setLoading(false);
+              list();
+            } else {
+              setLoading(false);
+              setError(data.message);
+            }
+          })
+          .catch((error) => {
+            setError(`ERROR: ${JSON.stringify(error)} or Something went wrong`);
             setLoading(false);
-            list();
-          } else {
-            setLoading(false);
-            setError(data.message);
-          }
-        })
-        .catch((error) => {
-          setError(`ERROR: ${JSON.stringify(error)} or Something went wrong`);
-          setLoading(false);
-        });
+          });
+        setTextError(false);
+      }
     }
   };
 
   return (
     <div className="flex flex-col p-5 mt-10 h-full">
       <FormGroup>
-        <div
-          key={uuidv4()}
-          className="flex items-center mb-2 p-2 ml-[30px]"
-        >
+        <div key={uuidv4()} className="flex items-center mb-2 p-2 ml-[30px]">
           <TextField
             disabled={loading}
             className="w-[400px]"
@@ -76,6 +78,8 @@ export default function TodoItem({
             variant="standard"
             label="list item"
             autoComplete="off"
+            error={textError}
+            helperText={textError && "item cannot be null"}
             onKeyDown={(e: KeyboardEvent) => handleEnter(e)}
           />
           {loading && <Loading className="ml-5" loadingProps={{ size: 15 }} />}

@@ -136,11 +136,6 @@ export default function Dashboard(): JSX.Element {
             </Button>
           </div>
         ))}
-      {loading && (
-        <Loading className="flex justify-center items-center h-full w-full" />
-      )}
-      {error.length > 0 && notFound()}
-
       <Menu
         key={selectedTodoId}
         id="long-menu"
@@ -153,6 +148,10 @@ export default function Dashboard(): JSX.Element {
           Delete
         </MenuItem>
       </Menu>
+      {loading && (
+        <Loading className="flex justify-center items-center h-full w-full" />
+      )}
+      {error !== "" && notFound()}
     </div>
   );
 }

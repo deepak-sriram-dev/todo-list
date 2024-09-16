@@ -132,6 +132,27 @@ describe("Testcases for Todo Items Component", () => {
     expect(textField[0].value).toBe(fakeTodoItem.todo_item);
   });
 
+  it("ensure error while creating todo item with empty value", async () => {
+    const { container } = render(<TodoItem params={{ id: todoId }} />);
+    const textField = await waitFor(
+      () => {
+        return screen.getByRole("textbox", { name: "list item" });
+      },
+      { timeout: 7000 }
+    );
+
+    fireEvent.keyDown(textField, { key: "Enter", charCode: 13 });
+
+    const errorText = await waitFor(
+      () => {
+        return screen.getByText("item cannot be null", { within: container });
+      },
+      { timeout: 6000 }
+    );
+
+    await expect(errorText).toBeInTheDocument();
+  }, 10000);
+
   it("update an existing todo item", async () => {
     const textField = await renderTodoItemsAndReturnTextField(
       fakeTodoItem,
