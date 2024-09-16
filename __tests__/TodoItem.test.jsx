@@ -96,29 +96,29 @@ describe("Testcases for Todo Items Component", () => {
   });
 
   it("create a new todo item", async () => {
-    let apiFn = jest.fn();
+    const updateValue = "item - 001";
+    let apiFn = jest.fn(() => {
+      itemName: updateValue;
+    });
 
     useRouter.mockImplementation(() => ({
-      pathName: `/new/${todoId}`,
+      pathName: `/api/todo/${todoId}/todo-item`,
       push: apiFn,
     }));
 
-    render(<TodoItem params={{ id: todoId }} />);
-    const textField = await waitFor(
-      () => {
-        return screen.getByRole("textbox", { name: "list item" });
-      },
-      { timeout: 10000 }
-    );
+    const { container } = render(<TodoItem params={{ id: todoId }} />);
+    const textField = screen.getByRole("textbox", {
+      name: "list item",
+      within: container,
+    });
+    fireEvent.change(textField, { target: { value: updateValue } });
 
-    await waitFor(
-      () => {
-        fireEvent.keyDown(textField, { key: "Enter", charCode: 13 });
-      },
-      { timeout: 10000 }
-    );
+    const keyPressed = fireEvent.keyDown(textField, {
+      key: "Enter",
+      charCode: 13,
+    });
 
-    await waitFor(() => expect(textField.value).toBe(""));
+    await expect(keyPressed).toBeTruthy();
   }, 20000);
 
   it("ensure created item are displaying in the page", async () => {

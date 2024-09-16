@@ -23,6 +23,7 @@ export default function New({ params }: PropsInterface): JSX.Element {
   const [emptyError, setEmptyError] = useState<boolean>(false);
   const [showIcon, setShowIcon] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+
   useEffect(() => {
     getTodo(todoId)
       .then((res) => res.json())
@@ -86,6 +87,7 @@ export default function New({ params }: PropsInterface): JSX.Element {
               className="w-[300px]"
               id="outlined-basic todo-item-text-field-id"
               label="Name"
+              aria-label="todo-name-textfield"
               autoComplete="off"
               variant="outlined"
               value={tempValue}

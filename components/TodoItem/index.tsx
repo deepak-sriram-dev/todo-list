@@ -40,6 +40,7 @@ export default function TodoItem({
   }, []);
 
   const handleEnter = (event: KeyboardEvent): void => {
+    
     if (event.key === "Enter") {
       setLoading(true);
       const target = event.target as HTMLInputElement;
