@@ -40,7 +40,6 @@ export default function TodoItem({
   }, []);
 
   const handleEnter = (event: KeyboardEvent): void => {
-    
     if (event.key === "Enter") {
       setLoading(true);
       const target = event.target as HTMLInputElement;
@@ -56,7 +55,7 @@ export default function TodoItem({
               list();
             } else {
               setLoading(false);
-              setError(data.message);
+              setError(data.error);
             }
           })
           .catch((error) => {

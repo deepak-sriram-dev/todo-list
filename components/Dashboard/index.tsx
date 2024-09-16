@@ -59,7 +59,7 @@ export default function Dashboard(): JSX.Element {
           setNewBtnClicked(false);
           router.push(`/new/${data.id}`);
         } else {
-          setError("Something went wrong");
+          setError(data.error);
         }
       })
       .catch((error) => {

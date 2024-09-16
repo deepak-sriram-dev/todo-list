@@ -15,7 +15,10 @@ export async function POST(req: Request) {
         { status: 200 }
       );
     } else {
-      throw new Error("Something went wrong");
+      return NextResponse.json(
+        { error: "something went wrong", success: false },
+        { status: 500 }
+      );
     }
   } catch (error) {
     RaiseError(error);

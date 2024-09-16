@@ -23,7 +23,10 @@ export async function POST(
         { status: 200 }
       );
     } else {
-      throw new Error("something went wrong");
+      return NextResponse.json(
+        { error: "Something went wrong", success: false },
+        { status: 500 }
+      );
     }
   } catch (error) {
     RaiseError(error);
