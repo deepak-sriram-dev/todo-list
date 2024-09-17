@@ -91,7 +91,7 @@ export default function TodoItem({
         ) : (
           Array.isArray(todoItems) &&
           todoItems.map((item) => (
-            <div data-testid={`todo-items-list-${item.id}`}>
+            <div key={uuidv4()} data-testid={`todo-items-list-${item.id}`}>
               <TodoFormController
                 key={uuidv4()}
                 item={item}
