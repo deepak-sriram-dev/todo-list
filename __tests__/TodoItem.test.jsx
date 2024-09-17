@@ -4,51 +4,13 @@ import { useRouter } from "next/navigation";
 import NewPage from "../app/new/[id]/page";
 import TodoItem from "../components/TodoItem";
 import TodoFormController from "../components/TodoItem/TodoFormController";
+import React from "react";
 
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
 
-global.fetch = jest.fn((route, { method }) => {
-  let fakeResp;
-  switch (method) {
-    case "GET":
-      fakeResp = {
-        title: "untitled",
-        id: 1,
-        createdAt: "09-09-2024 15:15:15TZ",
-      };
-
-      return Promise.resolve({
-        json: () => ({ data: fakeResp, success: true }),
-      });
-
-    case "POST":
-      fakeResp = {
-        id: 1,
-        todoItem: "item - 001",
-        isChecked: false,
-        success: true,
-      };
-
-      return Promise.resolve({
-        json: () => fakeResp,
-      });
-
-    case "PUT":
-      return Promise.resolve({
-        json: () => ({ message: "success", success: true }),
-      });
-
-    case "DELETE":
-      return Promise.resolve({
-        json: () => ({ success: true }),
-      });
-
-    default:
-      break;
-  }
-});
+global.fetch = jest.fn();
 
 const renderTodoItems = (fakeTodoItem, todoId) => {
   const setTodoItems = jest
@@ -80,6 +42,11 @@ const renderTodoItemsAndReturnTextField = async (fakeTodoItem, todoId) => {
 };
 
 describe("Testcases for Todo Items Component", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+    useRouter.mockRestore();
+  });
+
   let todoId = "1";
 
   const fakeTodoItem = {
@@ -90,15 +57,67 @@ describe("Testcases for Todo Items Component", () => {
   };
 
   it("render todo page newly created", () => {
+    const mockLoadData = {
+      title: "untitled",
+      id: 1,
+      createdAt: "09-09-2024 15:15:15TZ",
+    };
+
+    global.fetch.mockImplementation(() => {
+      return Promise.resolve({
+        json: () => ({ data: mockLoadData, success: true }),
+      });
+    });
+
     render(<NewPage params={{ id: todoId }} />);
     const label = screen.getByLabelText("Name");
     waitFor(() => expect(label.value).toBe("untitled"));
   });
 
+  it("ensure items listed in todo page", async () => {
+    const mockData = [
+      { todo_item: "item - 001", is_checked: false, id: 1, is_deleted: false },
+    ];
+
+    global.fetch.mockImplementation(() => {
+      return Promise.resolve({
+        json: () => ({ rows: mockData, message: "success", success: true }),
+      });
+    });
+
+    useRouter.mockImplementation(() => ({
+      pathName: `/api/todo/${todoId}/todo-item`,
+      push: jest.fn(),
+    }));
+
+    const { container } = render(<TodoItem params={{ id: todoId }} />);
+
+    const items = await waitFor(
+      () => {
+        return screen.getByTestId(`todo-items-list-${mockData[0].id}`, {
+          within: container,
+        });
+      },
+      { timeout: 6000 }
+    );
+    await expect(items).toBeInTheDocument();
+  }, 10000);
+
   it("create a new todo item", async () => {
-    const updateValue = "item - 001";
+    const itemName = "item - 001";
+    global.fetch.mockImplementation(() => {
+      return Promise.resolve({
+        json: () => ({
+          id: 1,
+          todoItem: "item - 001",
+          isChecked: false,
+          success: true,
+        }),
+      });
+    });
+
     let apiFn = jest.fn(() => {
-      itemName: updateValue;
+      itemName: itemName;
     });
 
     useRouter.mockImplementation(() => ({
@@ -111,7 +130,7 @@ describe("Testcases for Todo Items Component", () => {
       name: "list item",
       within: container,
     });
-    fireEvent.change(textField, { target: { value: updateValue } });
+    fireEvent.change(textField, { target: { value: itemName } });
 
     const keyPressed = fireEvent.keyDown(textField, {
       key: "Enter",
@@ -154,6 +173,12 @@ describe("Testcases for Todo Items Component", () => {
   }, 10000);
 
   it("update an existing todo item", async () => {
+    global.fetch.mockImplementation(() => {
+      return Promise.resolve({
+        json: () => ({ message: "success", success: true }),
+      });
+    });
+
     const textField = await renderTodoItemsAndReturnTextField(
       fakeTodoItem,
       todoId
@@ -173,6 +198,13 @@ describe("Testcases for Todo Items Component", () => {
 
   it("update todo item by toggle checkbox from the list", async () => {
     fakeTodoItem.is_checked = true;
+
+    global.fetch.mockImplementation(() => {
+      return Promise.resolve({
+        json: () => ({ message: "success", success: true }),
+      });
+    });
+
     renderTodoItems(fakeTodoItem, todoId);
 
     const element = await waitFor(() => {
@@ -196,6 +228,11 @@ describe("Testcases for Todo Items Component", () => {
   }, 10000);
 
   it("delete todo item from the list", async () => {
+    global.fetch.mockImplementation(() => {
+      return Promise.resolve({
+        json: () => ({ success: true }),
+      });
+    });
     renderTodoItems(fakeTodoItem, todoId);
 
     const element = await waitFor(() => {

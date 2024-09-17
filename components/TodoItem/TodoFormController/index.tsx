@@ -53,6 +53,8 @@ export default function TodoFormController(props: TodoFormControllerInterface) {
       .then((data) => {
         if (data.success) {
           list();
+        } else {
+          setError(data.error);
         }
         setItemLoading(false);
       })
@@ -67,7 +69,19 @@ export default function TodoFormController(props: TodoFormControllerInterface) {
   }: TodoItemCheckListInterface): Promise<void> => {
     setItemLoading(true);
     setItemId(id);
-    await deleteTodoItem(todoId, id).then(() => list());
+    await deleteTodoItem(todoId, id)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          list();
+        } else {
+          setError(`Error: ${data.error}`);
+        }
+      })
+      .catch((error) => {
+        setError(`Error - ${JSON.stringify(error)} or Something went wrong`);
+      });
+
     setItemLoading(false);
   };
 
@@ -94,7 +108,7 @@ export default function TodoFormController(props: TodoFormControllerInterface) {
   return (
     <div
       className="flex items-center mb-2 p-2"
-      data-testid={item ? `todoItem-${item.id}` : "todoItem-divs"}
+      data-testid={`todoItem-${item.id}`}
     >
       <FormControlLabel
         className="mr-0"

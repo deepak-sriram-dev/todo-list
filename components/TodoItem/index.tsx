@@ -66,7 +66,6 @@ export default function TodoItem({
       }
     }
   };
-
   return (
     <div className="flex flex-col p-5 mt-10 h-full">
       <FormGroup>
@@ -92,14 +91,16 @@ export default function TodoItem({
         ) : (
           Array.isArray(todoItems) &&
           todoItems.map((item) => (
-            <TodoFormController
-              key={uuidv4()}
-              item={item}
-              todoId={todoId}
-              setTodoItems={setTodoItems}
-              setError={setError}
-              setListItemLoading={setListItemLoading}
-            />
+            <div data-testid={`todo-items-list-${item.id}`}>
+              <TodoFormController
+                key={uuidv4()}
+                item={item}
+                todoId={todoId}
+                setTodoItems={setTodoItems}
+                setError={setError}
+                setListItemLoading={setListItemLoading}
+              />
+            </div>
           ))
         )}
       </FormGroup>

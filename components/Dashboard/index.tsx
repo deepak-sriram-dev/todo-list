@@ -91,6 +91,8 @@ export default function Dashboard(): JSX.Element {
   };
   return (
     <div className="flex flex-wrap h-full w-full" data-testid="dashboard-main">
+      {error !== "" && notFound()}
+
       <div className="p-5" onClick={handleCreate} data-testid="addBtn">
         <Button
           id="addBtn"
@@ -116,6 +118,7 @@ export default function Dashboard(): JSX.Element {
               ) : (
                 <div data-testid="link-card-div">
                   <Link
+                    aria-label={`todo-id-${eachTodo.id}`}
                     key={uuidv4()}
                     href={`/new/${eachTodo.id}`}
                     className="cursor-pointer"
@@ -151,7 +154,6 @@ export default function Dashboard(): JSX.Element {
       {loading && (
         <Loading className="flex justify-center items-center h-full w-full" />
       )}
-      {error !== "" && notFound()}
     </div>
   );
 }

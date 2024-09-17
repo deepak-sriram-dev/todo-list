@@ -2,7 +2,6 @@ import "@testing-library/jest-dom";
 import {
   fireEvent,
   render,
-  queryByAttribute,
   waitFor,
   screen,
 } from "@testing-library/react";
@@ -16,33 +15,7 @@ jest.mock("next/navigation", () => ({
   notFound: () => <NotFound />,
 }));
 
-global.fetch = jest.fn((route, { method }) => {
-  let promise;
-
-  switch (method) {
-    case "GET":
-      act(() => {
-        promise = Promise.resolve({ json: () => ({ rows: [] }) });
-      });
-      return promise;
-
-    case "POST":
-      act(() => {
-        promise = Promise.resolve({
-          json: () => ({ message: "success", success: true, id: 1 }),
-        });
-      });
-      return promise;
-
-    case "DELETE":
-      return Promise.resolve({
-        json: () => ({ message: "success", success: true }),
-      });
-
-    default:
-      break;
-  }
-});
+global.fetch = jest.fn();
 
 const fakeData = [
   {
@@ -65,36 +38,76 @@ jest.spyOn(React, "useState").mockImplementation((initialValue) => {
 });
 
 describe("Testcases for Dashboard/Todo Component", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+    useRouter.mockRestore();
+  });
+
   it("renders dashbaord page", () => {
-    act(() => {
-      const { container } = render(<Dashboard />);
-      const queryAttr = queryByAttribute.bind(null, "id");
-      const button = waitFor(() => queryAttr(container, "addBtn"), {
-        timeout: 5000,
-      });
-      waitFor(() => expect(button).toBeInTheDocument());
+    global.fetch.mockImplementation(() => {
+      return Promise.resolve({ json: () => ({ rows: [] }) });
     });
+
+    useRouter.mockImplementation(() => ({
+      pathName: `/api/todo`,
+      push: jest.fn(),
+    }));
+
+    const component = render(<Dashboard />);
+    const button = screen.getByTestId("addBtn", { within: component });
+
+    expect(button).toBeInTheDocument();
+  }, 10000);
+
+  it("renders dashboard page with todos", async () => {
+    global.fetch.mockImplementation(() => {
+      return Promise.resolve({ json: () => ({ rows: fakeData }) });
+    });
+
+    useRouter.mockImplementation(() => ({
+      pathName: `/api/todo`,
+      push: jest.fn(),
+    }));
+
+    const { container } = render(<Dashboard />);
+    const untitled = await waitFor(
+      () => {
+        return screen.getByLabelText(`todo-id-${fakeData[0].id}`, {
+          within: container,
+        });
+      },
+      { timeout: 5000 }
+    );
+
+    expect(untitled).toBeInTheDocument();
   }, 10000);
 
   it("render dashboard page and click on new and ensure redirected to new page", async () => {
-    let apiFn = jest.fn();
+    global.fetch.mockImplementation(() => {
+      return Promise.resolve({
+        json: () => ({ message: "success", success: true, id: 1 }),
+      });
+    });
+
+    let apiFn = jest.fn(() => {
+      title: "untitled";
+    });
 
     useRouter.mockImplementation(() => ({
-      pathName: "/",
+      pathName: "/api/todo",
       push: apiFn,
     }));
 
-    await act(() => {
-      return render(<Dashboard />);
-    });
+    const { container } = render(<Dashboard />);
+    const button = await waitFor(
+      () => {
+        return screen.getByTestId("addBtn", { within: container });
+      },
+      { timeout: 4000 }
+    );
 
-    await act(async () => {
-      const button = await waitFor(() => screen.getByTestId("addBtn"), {
-        timeout: 4000,
-      });
-
-      fireEvent.click(button);
-    });
+    await expect(button).toBeInTheDocument();
+    fireEvent.click(button);
 
     await waitFor(() => {
       expect(apiFn).toHaveBeenCalledTimes(1);
@@ -103,25 +116,19 @@ describe("Testcases for Dashboard/Todo Component", () => {
   }, 10000);
 
   it("delete todo from dashboard", async () => {
-    let element;
-    let component;
-
-    act(() => {
-      component = render(<Dashboard />);
-      return component;
+    global.fetch.mockImplementation(() => {
+      return Promise.resolve({
+        json: () => ({ rows: fakeData, message: "success", success: true }),
+      });
     });
 
-    await act(async () => {
-      element = await waitFor(
-        () => {
-          return screen.getByTestId("link-card-div");
-        },
-        {
-          timeout: 4000,
-        }
-      );
-      return element;
-    });
+    const { container } = render(<Dashboard />);
+    const element = await waitFor(
+      () => {
+        return screen.getByTestId("link-card-div", { within: container });
+      },
+      { timeout: 7000 }
+    );
 
     const getTodo = screen.getByText("untitled", { within: element });
     await expect(getTodo).toBeInTheDocument();
@@ -145,6 +152,7 @@ describe("Testcases for Dashboard/Todo Component", () => {
     );
 
     await expect(menuItem).toBeInTheDocument();
-    fireEvent.click(menuItem);
+    const keyPressed = fireEvent.click(menuItem);
+    expect(keyPressed).toBeTruthy();
   }, 10000);
 });

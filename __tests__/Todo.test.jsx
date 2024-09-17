@@ -156,7 +156,6 @@ describe("Testcases for Todo(New page) Component", () => {
     await expect(buttons).toBeInTheDocument();
 
     const doneIcon = screen.getByTestId("DoneIcon", { within: buttons });
-    console.log("🚀 ~ it ~ doneIcon:", doneIcon);
     fireEvent.click(doneIcon);
 
     const getErrorMsg = screen.getByText("todo name can't be null", {
