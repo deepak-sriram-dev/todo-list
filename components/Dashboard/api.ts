@@ -1,4 +1,4 @@
-export async function getList(): Promise<Response> {
+export async function getTodoList(): Promise<Response> {
   return await fetch("/api/todo", {
     method: "GET",
     headers: { "Cache-Control": "no-cache" },

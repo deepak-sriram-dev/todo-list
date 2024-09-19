@@ -6,7 +6,7 @@ import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import Loading from "@/components/Loading";
-import { createTodo, deleteTodo, getList } from "./api";
+import { createTodo, deleteTodo, getTodoList } from "./api";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -28,8 +28,8 @@ export default function Dashboard(): JSX.Element {
   const openDropdown = Boolean(anchorEl);
   const [selectedTodoId, setSelectedTodoId] = useState<number>(0);
 
-  const list = (): void => {
-    getList()
+  const getTodoListFn = (): void => {
+    getTodoList()
       .then((res) => res.json())
       .then((data) => {
         if (Object.keys(data.rows).length === 0) {
@@ -46,7 +46,7 @@ export default function Dashboard(): JSX.Element {
   };
 
   useEffect(() => {
-    list();
+    getTodoListFn();
     setLoading(true);
   }, []);
 
@@ -84,8 +84,8 @@ export default function Dashboard(): JSX.Element {
     setDeleteLoading(true);
     deleteTodo(selectedTodoId)
       .then((res) => res.json())
-      .then((data) => {
-        list();
+      .then(() => {
+        getTodoListFn();
         setDeleteLoading(false);
       });
   };

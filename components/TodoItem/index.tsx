@@ -21,7 +21,7 @@ export default function TodoItem({
   const [textError, setTextError] = useState<boolean>(false);
   const [listItemLoading, setListItemLoading] = useState<boolean>(false);
 
-  const list = () => {
+  const getTodoItemsFn = () => {
     getTodoItems(todoId)
       .then((res) => res.json())
       .then((data) => {
@@ -36,7 +36,7 @@ export default function TodoItem({
 
   useEffect(() => {
     setListItemLoading(true);
-    list();
+    getTodoItemsFn();
   }, []);
 
   const handleEnter = (event: KeyboardEvent): void => {
@@ -52,7 +52,7 @@ export default function TodoItem({
           .then((data) => {
             if (data.success) {
               setLoading(false);
-              list();
+              getTodoItemsFn();
             } else {
               setLoading(false);
               setError(data.error);

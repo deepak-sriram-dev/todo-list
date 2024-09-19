@@ -4,7 +4,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Loading from "@/components/Loading";
 import { Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { KeyboardEvent, useEffect, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import { TodoItemCheckListInterface } from "../interface";
 import { deleteTodoItem, updateTodoItem } from "./api";
 import { getTodoItems } from "../api";
@@ -30,7 +30,7 @@ export default function TodoFormController(props: TodoFormControllerInterface) {
     }
   }, [tempValue.length]);
 
-  const list = () => {
+  const getTodoItemsFn = () => {
     getTodoItems(todoId)
       .then((res) => res.json())
       .then((data) => {
@@ -52,7 +52,7 @@ export default function TodoFormController(props: TodoFormControllerInterface) {
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          list();
+          getTodoItemsFn();
         } else {
           setError(data.error);
         }
@@ -73,7 +73,7 @@ export default function TodoFormController(props: TodoFormControllerInterface) {
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          list();
+          getTodoItemsFn();
         } else {
           setError(`Error: ${data.error}`);
         }
@@ -92,7 +92,10 @@ export default function TodoFormController(props: TodoFormControllerInterface) {
     updateQuery(id, "is_checked", !item.is_checked);
   };
 
-  const handleItemChange = (e: any, id: number): void => {
+  const handleItemChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    id: number
+  ): void => {
     setItemId(id);
     setItemLoading(false);
     setTempValue(e.target.value);
